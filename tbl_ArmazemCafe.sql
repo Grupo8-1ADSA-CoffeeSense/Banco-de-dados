@@ -5,19 +5,20 @@ USE aluno;
 -- Tabela que armazenara a temperatura/umidade minima e maxima, que alertara o usuario caso haja mudanças fora das indicações
 CREATE TABLE alerta (
   idAlerta INT PRIMARY KEY AUTO_INCREMENT,
-  umidade_max DECIMAL(5,2) NULL,
-  temperatura_max DECIMAL(5,2) NULL,
-  umidade_min DECIMAL(5,2) NULL,
-  temperatura_min DECIMAL(5,2) NULL);
+  umidade_max DECIMAL(5,2),
+  temperatura_max DECIMAL(5,2),
+  umidade_min DECIMAL(5,2),
+  temperatura_min DECIMAL(5,2)
+  );
   
-  
+
 -- UMA TABELA PARA AS EMPRESAS QUE CONTRATAREM OS NOSSOS SERVIÇOS
 CREATE TABLE empresa (
-  idEmpresa INT,
+  idEmpresa INT PRIMARY KEY,
   cnpj CHAR(14) NOT NULL,
   nome VARCHAR(255) NOT NULL,
   categoria VARCHAR(70),
-  cep CHAR(9) NOT NULl,
+  cep CHAR(8) NOT NULl,
   numero VARCHAR(45),
   complemento VARCHAR(60),
   telCelular VARCHAR(11),
@@ -31,21 +32,21 @@ CREATE TABLE empresa (
 CREATE TABLE funcionario (
 idFuncionario INT,
 fkEmpresa INT,
-	PRIMARY KEY (idFuncionario, fkEmpresa),
+	CONSTRAINT pkFuncionario_empresa
+		PRIMARY KEY (idFuncionario, fkEmpresa),
 nome VARCHAR(255) NOT NULL,
-email VARCHAR(256) UNIQUE,
+email VARCHAR(255) UNIQUE,
 	CONSTRAINT chkEmail
-		CHECK (email LIKE('%@%', '%.%')),
+		CHECK (email IN('%@%', '%.%')),
 cargo VARCHAR(255) NOT NULL,
 senha VARCHAR(255) ,
 fkSupervisor INT ,
   CONSTRAINT supervisor_funcionario
 		FOREIGN KEY (fkSupervisor)
 			REFERENCES funcionario (idFuncionario),
-            
-  CONSTRAINT fk_Funcionario_Empresa1
+CONSTRAINT fk_funcionario_empresa
 		FOREIGN KEY (fkEmpresa)
-			REFERENCES Empresa (idEmpresa)
+			REFERENCES empresa(idEmpresa)
 );
 
  
@@ -77,7 +78,7 @@ CREATE TABLE dispositivo_monitoramento (
   fkArmazem INT,
   CONSTRAINT dispositivo_armazem
     FOREIGN KEY (fkArmazem)
-    REFERENCES amazem (idArmazem)
+    REFERENCES armazem (idArmazem)
     );
     
 -- Tabela pra receber os dados capturados do arduino
@@ -96,10 +97,18 @@ CREATE TABLE dados_monitoramento(
   
 -- Inserts das respectivas entidades
 
-INSERT INTO empresa (cnpj, nome, categoria, endereco, contato, representante) VALUES
-('123456789', 'Empresa Mamacitas no poder do café', 'Alimentos', 'Rua Mimimi, 123', 'mamacitas@empresa.com', 'Laura Seda'),
-('987654321', 'Empresa CafeinaVeia', 'Agricultura', 'Avenida Atléti Comi Nero, 456', 'cafenaveiao@empresa.com', 'Ice de pego');
+INSERT INTO empresa VALUES
+(1, '12345678901234', 'Coffee World', 'Alimentos', '01234567','122',null, '11990123456','39012345', 'Laura Seda'),
+(2, '23456789012345', 'Bom grão', 'Agricultura', '12345678', '456',null, '11901234567','39234567' 'Alberto Godoy'),
+(3, '34567890123456', 'Café do bem', 'Alimentos', '23456789','1098',null, '11912345678','39345678', 'Julio Araujo'),
+(4, '45678901234567', 'Cafeina Velha', 'Agricultura', '34567890','897',null, '11934567890','39456789', 'Alexandre Brasil');
 
+
+
+-- reparar o erro do insert acima e continuar os inserts
+
+
+   
 INSERT INTO armazem (nome, localizacao, capacidade_toneladas) VALUES
 ('Armazém A', 'Cidade Aristoteles', 1000),
 ('Armazém B', 'Cidade Bethoven', 1500);
@@ -126,7 +135,7 @@ INSERT INTO registro_sistema (data_hora, acao, fkFuncionario) VALUES
 -- JOINS
 
 -- mostra a empresa, o funcionario, seu cargo e supervisor
-SELECT empresa.nome AS 'Empresa', funcionario.nome AS 'Funcionário', funcionario.cargo AS 'Cargo', supervisor.nome AS 'Supervisor'
+SELECT empresa.nome AS Empresa, funcionario.nome AS Funcionário, funcionario.cargo AS Cargo, supervisor.nome AS Supervisor
 FROM empresa
 JOIN funcionario ON empresa.idEmpresa = funcionario.fkEmpresa
 JOIN funcionario supervisor ON funcionario.fkSupervisor = supervisor.idFuncionario;
