@@ -11,7 +11,6 @@ CREATE TABLE alerta (
   temperatura_min DECIMAL(5,2)
   );
   
-
 -- UMA TABELA PARA AS EMPRESAS QUE CONTRATAREM OS NOSSOS SERVIÇOS
 CREATE TABLE empresa (
   idEmpresa INT PRIMARY KEY,
@@ -37,7 +36,7 @@ fkEmpresa INT,
 nome VARCHAR(255) NOT NULL,
 email VARCHAR(255) UNIQUE,
 	CONSTRAINT chkEmail
-		CHECK (email IN('%@%', '%.%')),
+		CHECK (email like('%@%')),
 cargo VARCHAR(255) NOT NULL,
 senha VARCHAR(255) ,
 fkSupervisor INT ,
@@ -48,9 +47,6 @@ CONSTRAINT fk_funcionario_empresa
 		FOREIGN KEY (fkEmpresa)
 			REFERENCES empresa(idEmpresa)
 );
-
- 
-  
 
 -- Tabela para manter registro da localização de cada armazem 
 CREATE TABLE armazem(
@@ -74,13 +70,12 @@ CREATE TABLE armazem(
 CREATE TABLE dispositivo_monitoramento (
   idDispositivo INT PRIMARY KEY,
   nome VARCHAR(255),
-  localizacao VARCHAR(255) NULL,
   fkArmazem INT,
   CONSTRAINT dispositivo_armazem
     FOREIGN KEY (fkArmazem)
     REFERENCES armazem (idArmazem)
     );
-    
+
 -- Tabela pra receber os dados capturados do arduino
 CREATE TABLE dados_monitoramento(
   idDados INt,  
@@ -97,48 +92,60 @@ CREATE TABLE dados_monitoramento(
   
 -- Inserts das respectivas entidades
 
+
+INSERT INTO alerta  (umidade_max, temperatura_max, umidade_min, temperatura_min) VALUES
+(12.00,25.00,11.00,10.00);
+
 INSERT INTO empresa VALUES
 (1, '12345678901234', 'Coffee World', 'Alimentos', '01234567','122',null, '11990123456','39012345', 'Laura Seda'),
-(2, '23456789012345', 'Bom grão', 'Agricultura', '12345678', '456',null, '11901234567','39234567' 'Alberto Godoy'),
+(2, '23456789012345', 'Bom grão', 'Agricultura', '12345678', '456',null, '11901234567','39234567', 'Alberto Godoy'),
 (3, '34567890123456', 'Café do bem', 'Alimentos', '23456789','1098',null, '11912345678','39345678', 'Julio Araujo'),
 (4, '45678901234567', 'Cafeina Velha', 'Agricultura', '34567890','897',null, '11934567890','39456789', 'Alexandre Brasil');
 
+INSERT INTO funcionario ( idFuncionario, fkEmpresa, nome, email, cargo, senha,fkSupervisor) VALUES
+(1,1,'Patrick', 'patrickbateman@gmail.com', 'Gerente', '1234', NULL),
+(2,1,'Amy', 'amydune@gmail.com', 'Supervisor', '2345', 1),
+(3,1,'Fabio', 'fabiojunior@gmail.com', 'Funcionário', '3456', 2),
 
 
--- reparar o erro do insert acima e continuar os inserts
+(4,2,'Carlos', 'carlosalves@gmail.com', 'Gerente', '1234', NULL),
+(5,2,'Fernando', 'fernandobrandao@gmail.com', 'Supervisor', '2345', 4),
+(6,2,'Julia', 'juliacristianotti@gmail.com', 'Funcionário', '3456', 5);
+
+INSERT INTO armazem (nome, localizacao, capacidade_toneladas, fkEmpresa, fkAlerta) VALUES
+('Armazém A', 'Cidade Aristoteles', 1000,1,1),
+('Armazém B', 'Cidade Bethoven', 1500,1,1),
+('Armazém C','Cidade Chopin',1000,2,1),
+('Armazém D','Cidade Nietzsche',1500,3,1),
+('Armazém E', 'Cidade Mozart', 1500,4,1);
+
+INSERT INTO dispositivo_monitoramento VALUES
+(1,'Sensor 1', 1),
+(2, 'Sensor 2', 2),
+(3,'Sensor 3', 3),
+(4,'Sensor 4',4),
+(5,'Sensor 5', 5);
+
+INSERT INTO dados_monitoramento VALUES
+(1, 1, '2024-05-07 08:00:00', 18.3, 11.25),
+(2,2, '2024-05-07 08:00:00', 14.00, 14.00),
+(3, 3, '2024-05-07 08:00:00', 14.00, 12.00),
+(4, 4, '2024-05-07 08:00:00', 20.00, 11.10),
+(5, 5, '2024-05-07 08:00:00', 21.32, 11.34);
 
 
-   
-INSERT INTO armazem (nome, localizacao, capacidade_toneladas) VALUES
-('Armazém A', 'Cidade Aristoteles', 1000),
-('Armazém B', 'Cidade Bethoven', 1500);
 
-INSERT INTO dispositivo_monitoramento (nome, localizacao, fkArmazem) VALUES
-('Sensor 1', 'Armazém A', 1),
-('Sensor 2', 'Armazém B', 2);
-
-
-INSERT INTO funcionario (nome, email, cargo, senha, fkEmpresa, fkSupervisor) VALUES
-('Patrick Bateman', 'Bateman@americano.com', 'Gerente', 'paulallen', 1, NULL),
-('Amy Dunne', 'Amyexemplar@mamacitas.com', 'Supervisor', 'fenasmalucas123', 1, 1),
-('Hannibal Lecter', 'hannibal@meat.com', 'Funcionário', 'grahamlove', 1, 2);
-
-INSERT INTO dados_monitoramento (data_hora, temperatura, umidade, fkDispositivo) VALUES
-('2024-04-07 08:00:00', 25.6, 60, 1),
-('2024-04-07 09:00:00', 26.2, 58, 2);
-
-INSERT INTO registro_sistema (data_hora, acao, fkFuncionario) VALUES
-('2024-04-07 08:00:00', 'Login', 1),
-('2024-04-07 09:00:00', 'Alteração nas contas de usuário', 2);
 
 
 -- JOINS
 
 -- mostra a empresa, o funcionario, seu cargo e supervisor
-SELECT empresa.nome AS Empresa, funcionario.nome AS Funcionário, funcionario.cargo AS Cargo, supervisor.nome AS Supervisor
+SELECT empresa.nome AS Empresa, funcionario.nome AS Funcionário, funcionario.cargo AS Cargo, IFNULL(supervisor.nome, 'sem supervisor') AS Supervisor
 FROM empresa
 JOIN funcionario ON empresa.idEmpresa = funcionario.fkEmpresa
-JOIN funcionario supervisor ON funcionario.fkSupervisor = supervisor.idFuncionario;
+LEFT JOIN funcionario supervisor ON funcionario.fkSupervisor = supervisor.idFuncionario;
+
+-- ponto de partida para finalizar o script
 
 -- mostra o funcionario e a sua respectiva empresa
 
