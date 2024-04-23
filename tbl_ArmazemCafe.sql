@@ -153,9 +153,11 @@ SELECT funcionario.nome AS 'Funcionário', empresa.nome AS 'Empresa'
 FROM funcionario
 JOIN empresa ON funcionario.fkEmpresa = empresa.idEmpresa;
 
--- exibi os dados do monitoramento junto com os dados do armazem
-SELECT dm.data_hora AS 'Data e Hora', dm.temperatura AS 'Temperatura', dm.umidade AS 'Umidade', d.nome AS 'Dispositivo', a.localizacao AS 'Localização'
-FROM dados_monitoramento dm
-JOIN dispositivo_monitoramento d ON dm.fkDispositivo = d.idDispositivo
-JOIN armazem a ON d.fkArmazem = a.idArmazem;
+-- exibe os dados do monitoramento junto com os dados do armazem
+SELECT dm.data_horaCaptura AS 'Data e Hora', dm.temperatura AS 'Temperatura', dm.umidade AS 'Umidade', dispositivo.nome AS 'Dispositivo' , armazem.localizacao AS 'Localização'
+	FROM dados_monitoramento AS dm
+	JOIN dispositivo_monitoramento as dispositivo 
+		ON dm.fkDispositivo = dispositivo.idDispositivo
+	JOIN armazem  
+		 ON dispositivo.fkArmazem = armazem.idArmazem;
 
