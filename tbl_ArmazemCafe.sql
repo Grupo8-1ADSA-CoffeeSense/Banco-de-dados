@@ -3,8 +3,8 @@ USE aluno;
 
 
 -- Tabela que armazenara a temperatura/umidade minima e maxima, que alertara o usuario caso haja mudanças fora das indicações
-CREATE TABLE alerta (
-  idAlerta INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE parametro (
+  idParametro INT PRIMARY KEY AUTO_INCREMENT,
   umidade_max DECIMAL(5,2),
   temperatura_max DECIMAL(5,2),
   umidade_min DECIMAL(5,2),
@@ -21,8 +21,7 @@ CREATE TABLE empresa (
   numero VARCHAR(45),
   complemento VARCHAR(60),
   telCelular VARCHAR(11),
-  telFixo VARCHAR(10),
-  representante VARCHAR(255)
+  telFixo VARCHAR(10)
   );
   
 
@@ -59,9 +58,9 @@ CREATE TABLE armazem(
 		FOREIGN KEY (fkEmpresa)
 			REFERENCES empresa (idEmpresa),
   fkAlerta INT ,
-	CONSTRAINT alerta
-		FOREIGN KEY (fkAlerta)
-			REFERENCES alerta(idAlerta)
+	CONSTRAINT parametro_armazem
+		FOREIGN KEY (fkParametro)
+			REFERENCES alerta(idParametro)
 );
    
 
@@ -93,14 +92,14 @@ CREATE TABLE dados_monitoramento(
 -- Inserts das respectivas entidades
 
 
-INSERT INTO alerta  (umidade_max, temperatura_max, umidade_min, temperatura_min) VALUES
+INSERT INTO parametro (umidade_max, temperatura_max, umidade_min, temperatura_min) VALUES
 (12.00,25.00,11.00,10.00);
 
 INSERT INTO empresa VALUES
-(1, '12345678901234', 'Coffee World', 'Alimentos', '01234567','122',null, '11990123456','39012345', 'Laura Seda'),
-(2, '23456789012345', 'Bom grão', 'Agricultura', '12345678', '456',null, '11901234567','39234567', 'Alberto Godoy'),
-(3, '34567890123456', 'Café do bem', 'Alimentos', '23456789','1098',null, '11912345678','39345678', 'Julio Araujo'),
-(4, '45678901234567', 'Cafeina Velha', 'Agricultura', '34567890','897',null, '11934567890','39456789', 'Alexandre Brasil');
+(1, '12345678901234', 'Coffee World', 'Alimentos', '01234567','122',null, '11990123456','39012345'),
+(2, '23456789012345', 'Bom grão', 'Agricultura', '12345678', '456',null, '11901234567','39234567'),
+(3, '34567890123456', 'Café do bem', 'Alimentos', '23456789','1098',null, '11912345678','39345678'),
+(4, '45678901234567', 'Cafeina Velha', 'Agricultura', '34567890','897',null, '11934567890','39456789');
 
 INSERT INTO funcionario ( idFuncionario, fkEmpresa, nome, email, cargo, senha,fkSupervisor) VALUES
 (1,1,'Patrick', 'patrickbateman@gmail.com', 'Gerente', '1234', NULL),
