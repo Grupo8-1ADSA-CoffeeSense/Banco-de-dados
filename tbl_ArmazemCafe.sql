@@ -87,8 +87,22 @@ CREATE TABLE dados_monitoramento(
 		FOREIGN KEY (fkDispositivo)
 			REFERENCES dispositivo_monitoramento (idDispositivo)
     );
-  
-  
+    
+CREATE TABLE historico_temp(
+idHist_temp INT PRIMARY KEY,
+data_temp DATE,
+hora_temp TIME,
+status VARCHAR(50),
+	CHECK(status IN('Ruim','Medio','Bom'))
+);
+
+CREATE TABLE historico_umd(
+idHist_umd INT PRIMARY KEY,
+data_umd DATE,
+hora_umd TIME,
+status VARCHAR(50),
+	CHECK(status IN('Ruim','Medio','Bom'))
+);
 -- Inserts das respectivas entidades
 
 
