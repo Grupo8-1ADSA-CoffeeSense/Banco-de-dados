@@ -53,14 +53,14 @@ CREATE TABLE armazem(
   nome VARCHAR(255) NOT NULL,
   localizacao VARCHAR(255),
   capacidade_toneladas INT,
-  fkEmpresa INT , 
+  fkEmpresa INT, 
 	CONSTRAINT fk_Armazem_Empresa1
 		FOREIGN KEY (fkEmpresa)
 			REFERENCES empresa (idEmpresa),
-  fkAlerta INT ,
+  fkParametro INT ,
 	CONSTRAINT parametro_armazem
 		FOREIGN KEY (fkParametro)
-			REFERENCES alerta(idParametro)
+			REFERENCES parametro(idParametro)
 );
    
 
@@ -77,7 +77,7 @@ CREATE TABLE dispositivo_monitoramento (
 
 -- Tabela pra receber os dados capturados do arduino
 CREATE TABLE dados_monitoramento(
-  idDados INt,  
+  idDados INT AUTO_INCREMENT,  
   fkDispositivo INT,
 	PRIMARY KEY (idDados, fkDispositivo),
   data_horaCaptura DATETIME,
@@ -87,22 +87,6 @@ CREATE TABLE dados_monitoramento(
 		FOREIGN KEY (fkDispositivo)
 			REFERENCES dispositivo_monitoramento (idDispositivo)
     );
-    
-CREATE TABLE historico_temp(
-idHist_temp INT PRIMARY KEY,
-data_temp DATE,
-hora_temp TIME,
-status VARCHAR(50),
-	CHECK(status IN('Ruim','Medio','Bom'))
-);
-
-CREATE TABLE historico_umd(
-idHist_umd INT PRIMARY KEY,
-data_umd DATE,
-hora_umd TIME,
-status VARCHAR(50),
-	CHECK(status IN('Ruim','Medio','Bom'))
-);
 -- Inserts das respectivas entidades
 
 
